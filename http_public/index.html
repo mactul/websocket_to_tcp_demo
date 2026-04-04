@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Emscripten WebSocket Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #202020;
+        }
+        #output {
+            background: #f8f8f8;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 200px;
+        }
+        #received {
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 50px;
+        }
+        .info {
+            background: #e5f3fe;
+            border-left: 4px solid #26a1ff;
+            padding: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emscripten WebSocket Demo</h1>
+
+    <div class="info">
+        <strong>Note:</strong> This demo establishes a TCP connection to <code>localhost:4000</code>
+        <br>Make sure you run <code>nc -l -p 4000</code> and then press Ctrl+F5.
+    </div>
+
+    <h2>Console Output:</h2>
+    <div id="output"></div>
+
+    <h2>Ascii bytes of the last packet received. Area controled by C code</h2>
+    <div id="received"></div>
+
+    <script>
+        // Redirect printf output from Emscripten to the JS console.
+        var Module = {
+            print: function(text) {
+                console.log(text);
+            },
+            printErr: function(text) {
+                console.log('Error: ' + text);
+            }
+        };
+
+        // Capture the JS console output and display it on the page
+        var outputDiv = document.getElementById('output');
+        var oldLog = console.log;
+        console.log = function() {
+            var message = Array.prototype.slice.call(arguments).join(' ') + '\n';
+            outputDiv.textContent += message;
+            oldLog.apply(console, arguments);
+        };
+    </script>
+
+    <script src="bin/websocket.js"></script>
+</body>
+</html>

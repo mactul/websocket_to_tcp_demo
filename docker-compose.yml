@@ -1,0 +1,28 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: images/nginx
+    ports:
+      - "80:8080"
+    networks:
+      - common_network
+    volumes:
+      - ./http_public:/var/www/html/
+
+  websockify:
+    container_name: websockify
+    build:
+      context: images/websockify
+    user: "nobody"
+    networks:
+      common_network:
+        aliases:
+          - websockify.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: "websockify websockify.internal:5001 host.docker.internal:4000"
+
+networks:
+  common_network: {}
+
